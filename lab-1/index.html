@@ -29,24 +29,36 @@
 			<b class="www"> x 
 				<b class="four">{{i}}</b> = 
 			</b>
-			<b class="tree">{{multiply(i)}}</b> 
+			<b class="tree">{{multiply(i)}}</b>
 		</h2>
+
+		
+		<h1 class="tree">ผลรวมของสูตรคูณ = {{summ(row)}}</h1> 
+		
 
 	</div>
 
 	</center>
 
 	<script>
+		let ans = 0
 		let app = new Vue({
 			el: '#app',
 			data: {//กำหนดค่า
 				num: 2,
 				before_num: 1,
-				row: 12
+				row: 12, 
 			}, 
 			methods:{//รับค่าได้
 				multiply: function(row){
 					return this.num * row
+				},
+				summ: function(row){
+					ans = 0
+					for (var i = 1; i <= row; i++) {
+						ans += (this.num * i)
+					}
+					return ans
 				}
 			},
 			watch:{//ดูค่า...ว่ามีการเปลี่ยนแปลงไหม
