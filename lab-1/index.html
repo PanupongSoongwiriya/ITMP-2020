@@ -9,58 +9,72 @@
 <body class="paper">
 	<div id="app">
 		<input type="number" v-model="num">
+		<input type="number" v-model="row">
 		<div class="space"></div>
 		<h2> สูตรคูณแม่ {{num}} </h2>
-		<h3 v-for="i in 12"> {{num}} x {{i}} = {{multiply(i)}} </h3>
+		<h2> สูตรคูณแม่ก่อนหน้า {{before_num}} </h2>
+		<h3 v-for="i in r"> {{num}} x {{i}} = {{multiply(i)}} </h3>
 	</div>
 
 	<script>
 		let app = new Vue({
 			el: '#app',
-			data: {
-				num: 2
+			data: {//กำหนดค่า
+				num: 2,
+				before_num: 1,
+				row: 12
 			}, 
-			methods:{
+			methods:{//รับค่าได้
 				multiply: function(row){
 					return this.num * row
 				}
+			},
+			watch:{//ดูค่า...ว่ามีการเปลี่ยนแปลงไหม
+				num: function(neww, old){
+					// console.log(neww)
+					// console.log(old)
+					this.before_num = old
+				}
 			}
-			// , 
-			// computed:{
-			// 	ans2:function () {
-			// 		return this.num * 2
-			// 	}, 
-			// 	ans3:function () {
-			// 		return this.num * 3
-			// 	}, 
-			// 	ans4:function () {
-			// 		return this.num * 4
-			// 	}, 
-			// 	ans5:function () {
-			// 		return this.num * 5
-			// 	}, 
-			// 	ans6:function () {
-			// 		return this.num * 6
-			// 	}, 
-			// 	ans7:function () {
-			// 		return this.num * 7
-			// 	}, 
-			// 	ans8:function () {
-			// 		return this.num * 8
-			// 	}, 
-			// 	ans9:function () {
-			// 		return this.num * 9
-			// 	}, 
-			// 	ans10:function () {
-			// 		return this.num * 10
-			// 	}, 
-			// 	ans11:function () {
-			// 		return this.num * 11
-			// 	}, 
-			// 	ans12:function () {
-			// 		return this.num * 12
-			// 	}, 
-			// }
+			, 
+			computed:{//ประมวลผลได้
+				r:function () {
+					return parseInt(this.row)
+				}, 
+				ans2:function () {
+					return this.num * 2
+				}, 
+				ans3:function () {
+					return this.num * 3
+				}, 
+				ans4:function () {
+					return this.num * 4
+				}, 
+				ans5:function () {
+					return this.num * 5
+				}, 
+				ans6:function () {
+					return this.num * 6
+				}, 
+				ans7:function () {
+					return this.num * 7
+				}, 
+				ans8:function () {
+					return this.num * 8
+				}, 
+				ans9:function () {
+					return this.num * 9
+				}, 
+				ans10:function () {
+					return this.num * 10
+				}, 
+				ans11:function () {
+					return this.num * 11
+				}, 
+				ans12:function () {
+					return this.num * 12
+				}, 
+			}
 		})
 	</script>
 </body>
