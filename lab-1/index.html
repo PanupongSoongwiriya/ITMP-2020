@@ -7,14 +7,34 @@
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 <body class="paper">
+	<center>
+
 	<div id="app">
-		<input type="number" v-model="num">
-		<input type="number" v-model="row">
+
+		<b class="hhh">สูตรคูณแม่ : <input type="number" v-model="num" class="one"> </b>
+		<b class="hhh">จำนวนแถว : <input type="number" v-model="row" class="four"></b>
+
 		<div class="space"></div>
-		<h2> สูตรคูณแม่ {{num}} </h2>
-		<h2> สูตรคูณแม่ก่อนหน้า {{before_num}} </h2>
-		<h3 v-for="i in r"> {{num}} x {{i}} = {{multiply(i)}} </h3>
+
+		<h1> <b class="www">สูตรคูณแม่</b> <b class="one">{{num}}</b> </h2>
+
+		<div class="space"></div>
+
+		<h2> <b class="www">สูตรคูณแม่ก่อนหน้า</b> <b class="two">{{before_num}}</b> </h2>
+
+		<div class="space"></div>
+
+		<h2 v-for="i in r" class="five"> 
+			<b class="one">{{num}}</b>
+			<b class="www"> x 
+				<b class="four">{{i}}</b> = 
+			</b>
+			<b class="tree">{{multiply(i)}}</b> 
+		</h2>
+
 	</div>
+
+	</center>
 
 	<script>
 		let app = new Vue({
