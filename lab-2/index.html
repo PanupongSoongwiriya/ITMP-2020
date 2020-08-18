@@ -8,14 +8,23 @@
 </head>
 <body>
 	<div id="app">
-		
+		<h3>name {{person.name}}</h3>
+		<h3>username {{person.username}}</h3>
+		<h3>email {{person.email}}</h3>
+		<h3>company. {{person.company.name}}</h3>
+		<h2 v-for="u in users" :data-id="u.id" @click="test_view(u)">
+			{{u.name}}
+		</h2>
 	</div>
-	
 
 	<script>
 		fetch('https://jsonplaceholder.typicode.com/users')
 		.then(response => response.json())
-		.then(json => {console.log(json)})
+		.then(json => {
+			app.users = json
+			app.person = app.users[0]
+		})
+
 		let app = new Vue({
 			el: '#app',
 			data: {
@@ -29,9 +38,20 @@
 					company:{
 						name : '..loading',
 					}
-				}	
+				}
+			}, 
+			methods:{
+				test_view: function(users){
+					this.person = users
+				}
 			}
 		})
+
+		// function test_view(h2){
+		// 	let id = h2.dataset.id
+		// 	app.person = app.users[id-1]
+		// 	console.log(id)
+		// }
 
 	</script>
 </body>
