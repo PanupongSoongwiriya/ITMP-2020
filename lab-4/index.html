@@ -10,31 +10,41 @@
 	<div id="canvas">
 		<section id="canvas_header">
 			<div>
-				เหลือเวลา 10 วินาที
+				เหลือเวลา {{time}} วินาที
 			</div>
 		</section>
 		<section id="canvas_main">
 			<main>
-				<a-dot></a-dot>
-				<a-dot></a-dot>
-				<a-dot></a-dot>
-				<a-dot></a-dot>
-				<a-dot></a-dot>
-				<a-dot style="--l:80%"></a-dot>
-				<a-dot data-pick="true"></a-dot>
-				<a-dot></a-dot>
-				<a-dot></a-dot>
+				<a-dot v-for="i in row*row" :style="{'--row':row, '--h':h, '--l':l+'%'}" :data-pick="i==pick" @click="check"></a-dot>
 			</main>
 		</section>
 		<section id="canvas_footer">
 			<div>
-				0 คะแนน
+				{{score}} คะแนน
+			</div>
+		</section>
+		<section id="canvas_footer">
+			<div>
+				<img :src="img" width="50" height="50">
+			</div>
+		</section>
+		<section id="canvas_footer">
+			<div class="canvas_footer2">
+				<button @click="start()">เริ่ม</button>
+			</div>
+			<div class="canvas_footer3">
+				{{text}}
+			</div>
+		</section>
+		<section id="canvas_footer">
+			<div class="canvas_footer4">
+				<button @click="restart()">เริ่มใหม่</button>
 			</div>
 		</section>
 	</div>
 
 	<script>
-		let picklight = "20%" //เลือกว่ารอบนี้ อันพิเศษจะมีความสว่าง 20%
+		let picklight = "37.5%" //เลือกว่ารอบนี้ อันพิเศษจะมีความสว่าง 37.5%
 		document.registerElement('a-dot') //ให้ vue รู้จัก a-dot
 
 		function rand(start,stop){//สร้างฟังก์ชัน random ไว้ใช้
@@ -45,27 +55,83 @@
 		let app = new Vue({
 			el:'#canvas',
 			data:{
+				status:false,//เล่นหรือยัง?
+				num_start:2,//เริ่มสุ่มจากอะไร
+				num_stop:5,//สุ่มตัวท้ายสุดอะไร
+				text:'หมดเวลา!!!',//แสดงข้อความหมดเวลา
+				img:'',//แสดงรูปจากเน็ตถูกผิด
 				row:2, //จำนวนแถวที่จะมีในรอบนี้
 				h:330, // hue ในรอบนี้
-				time:10, //เวลาเริ่มต้น
+				time:20, //เวลาเริ่มต้น
 				score:0, //คะแนนเริ่มต้น
 				pick:1, //หมายเลขวงกลมที่จะสีแตกต่างจากก้อนอื่นๆ
-				l:30,//ความสว่างของสีทั่วไปในรอบนี้
+				l:50,//ความสว่างของสีทั่วไปในรอบนี้
 			},
 			methods: {
-
+				check: function(e){//เช็คถูกผิดและเพิ่มลดระดับความยาก
+					console.log(e.target.dataset.pick)
+					if (e.target.dataset.pick && (this.time > 0) && this.status) {//กดถูกอัน
+						document.querySelector('img').style.display = "flex";
+						this.score++
+						this.img = 'https://www.peche33.com/wp-content/uploads/2018/04/check-mark-1292787_1280.png'
+						this.num_start += 0.5
+						this.num_stop += 0.5
+						app.correct()
+					}else if(e.target.dataset.pick != true && (this.time > 0) && this.status){//กดผิดอัน
+						document.querySelector('img').style.display = "flex";
+						this.score -= 1
+						this.img = 'https://cdn.pixabay.com/photo/2012/04/13/00/22/red-31226_960_720.png'
+						if (app.num_start > 2) {
+							this.num_start -= 0.5
+							this.num_stop -= 0.5
+						}
+					}
+				},
+				correct: function(){//ด่านต่อไป
+					this.row = rand(parseInt(app.num_start), parseInt(app.num_stop))
+					this.h = rand(0, 360)
+					this.pick = rand(1, app.row*app.row)
+				},
+				start: function(){//เริ่มเล่น
+					document.querySelector('.canvas_footer2').style.display = "none";
+					this.status = true;
+					let counter = setInterval(()=>{
+						if (this.time > 0 && this.status) {
+							this.time--
+						}else{
+							this.status = false;
+							document.querySelector('.canvas_footer3').style.display = "flex";
+							document.querySelector('.canvas_footer4').style.display = "flex";
+							clearInterval(counter)
+						}
+					},1000);
+				},
+				restart: function(){//เริ่มใหม่
+					document.querySelector('img').style.display = "none";
+					document.querySelector('.canvas_footer4').style.display = "none";
+					document.querySelector('.canvas_footer3').style.display = "none";
+					this.status = true;
+					this.time = 20;
+					this.score = 0;
+					this.num_start = 2;
+					this.num_stop = 5;
+					app.correct()
+					let counter = setInterval(()=>{
+						if (this.time > 0 && this.status) {
+							this.time--
+						}else{
+							this.status = false;
+							document.querySelector('.canvas_footer3').style.display = "flex";
+							document.querySelector('.canvas_footer4').style.display = "flex";
+							clearInterval(counter)
+						}
+					},1000);
+				}
 			}
 		})
+		app.correct()//เริ่มปุปสุ่มปัป
 		//ทำให้แคนวาสมี --picklight ตามที่กำหนดไว้ข้างบนนี้
 		document.querySelector('#canvas').style.setProperty('--picklight',picklight);
-		
-		let counter = setInterval(()=>{
-			if (app.time>0) {
-				app.time--
-			}else{
-				clearInterval(counter)
-			}
-		},1000);
 	</script>
 </body>
 </html>

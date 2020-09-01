@@ -3,6 +3,13 @@ body{
 	display: flex;
 	background: black;
 }
+div{
+	font-size: 24px;
+}
+button{
+	font-size: 24px;
+	border-radius: 10px;
+}
 #canvas{
 	margin: auto;
 	width: 400px;
@@ -15,6 +22,13 @@ body{
 	height: 50px;
 	color: white;
 	font-weight: bold;
+}
+.canvas_footer3{
+	font-size: 48px;
+	color: red;
+}
+img, .canvas_footer4, .canvas_footer3{
+	display: none;
 }
 #canvas_main{
 	background-color: black;
