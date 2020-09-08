@@ -10,7 +10,7 @@
 	<div id="canvas">
 		<section id="canvas_header">
 			<div>
-				{{score}} แสดงคะแนน
+				{{score}} คะแนน
 			</div>
 		</section>
 		<section id="canvas_main" 
@@ -30,11 +30,14 @@
 			</main>
 		</section>
 		<section id="canvas_footer">
-			<div v-if="play" class="btn" id="toggle" @click="change_isRightArrow()">
+			<div v-if="play === null" class="btn" id="toggle" @click="start()">
+				Start
+			</div>
+			<div v-if="play === true" class="btn" id="toggle" @click="change_isRightArrow()">
 				Toggle
 			</div>
-			<div v-if="!play" class="btn" id="endgame">
-				Ene Game
+			<div v-if="play === false" class="btn" id="endgame" @click="restart()">
+				Restart
 			</div>
 		</section>
 	</div>
@@ -44,24 +47,31 @@
 			let shift = (stop-start)+1
 			return Math.floor(Math.random()*100%shift)+start
 		}
-		
+		function rand_fruit(){
+			if (rand(0, 1)){
+				return "banana"
+			}
+			return "apple"
+		}
 		let fruitCount = 5
 		let isRightArrow = "right"
 		let speed = 1000
+		let run_time
 		let app = new Vue({
 			el:'#canvas',
 			data:{
 				isRightArrow:isRightArrow,
 				speed:speed,
-				play:true,
+				play:null,
 				time:0,
 				score:0,
 				turn:0,
+				dif:1,
 				fruits:[
-					{id:1,type:"banana",pst:6,run:true,step:1},
-					{id:2,type:"apple",pst:3,run:true,step:1},
-					{id:3,type:"apple",pst:2,run:true,step:1},
-					{id:4,type:"banana",pst:1,run:true,step:1},
+					{id:1,type:rand_fruit(),pst:rand(6,7),run:true,step:1},
+					{id:2,type:rand_fruit(),pst:rand(4,5),run:true,step:1},
+					{id:3,type:rand_fruit(),pst:3,run:true,step:1},
+					{id:4,type:rand_fruit(),pst:rand(1,2),run:true,step:1},
 				]
 			},
 			methods:{
@@ -71,35 +81,72 @@
 					} else {
 						this.isRightArrow = "right"
 					}
+				},
+				start: function(){//เริ่มเล่น
+					this.play = true;
+					run_time = setTimeout(function playing(){
+						if (app.play) {
+							app.turn++
+							run_time = setTimeout(playing, app.speed)
+						}
+					},app.speed)
+				},
+				restart: function(){//เริ่มใหม่
+					this.isRightArrow = isRightArrow
+					this.speed = speed
+					this.play = true
+					this.time = 0
+					this.score = 0
+					this.turn = 0
+					this.dif = 1
+					this.fruits = [
+						{id:1,type:"banana",pst:6,run:true,step:1},
+						{id:2,type:"apple",pst:rand(3,5),run:true,step:1},
+						{id:3,type:"apple",pst:2,run:true,step:1},
+						{id:4,type:"banana",pst:1,run:true,step:1},
+					]
+					run_time = setTimeout(function playing(){
+						if (app.play) {
+							app.turn++
+							run_time = setTimeout(playing, app.speed)
+						}
+					},app.speed)
 				}
 			},
 			computed:{},
 			watch:{
 				turn: function(){
-					let count = this.fruits.length
+					if (rand(0, this.dif)) {
+						this.fruits.push({id:fruitCount,type:rand_fruit(),pst:0,run:true,step:1});
+						fruitCount++;
+					}
 					for (let f in this.fruits) {
-						if ((this.fruits[f].pst == 12 && this.fruits[f].type != "apple") || (this.fruits[f].pst == 16 && this.fruits[f].type != "banana")) {//เช็คว่าเข้าถูกที่หรือป่าว
-							this.play = false//หยุดเล่น
-							console.log("เข้าผิดอันโว้ยยยย")
-							break;
-						}
 						if (this.fruits[f].pst == 10 && this.isRightArrow == "right") {//เช็คว่าต้องไปทางไหน
 							this.fruits[f].step = 3//วิ่งไปทางขวา
 						}
 						if (this.fruits[f].pst == 12 || this.fruits[f].pst == 16) {//ถึงเป้าหมายหรือยัง
+							if ((this.fruits[f].pst == 12 && this.fruits[f].type != "apple") || (this.fruits[f].pst == 16 && this.fruits[f].type != "banana")) {//เช็คว่าเข้าถูกที่หรือป่าว
+								this.play = false//หยุดเล่น
+								clearTimeout(run_time);
+								break;
+							} else if(this.fruits[f].run){
+								this.score++;
+								if (this.turn%5) {
+									this.dif++;
+								}
+								if (this.speed > 500) {
+									this.speed = this.speed-rand(30, 50)
+								}
+							}
 							this.fruits[f].run = false//หยุดวิ่ง
 						}
 						if (this.fruits[f].run) {
 							this.fruits[f].pst += this.fruits[f].step
 						}
-						// console.log(this.fruits[f])
 					}
 				}
 			}
 		})
-		let playing = setInterval(function(){
-			app.turn++; 
-		}, app.speed)
 	</script>
 </body>
 </html>
