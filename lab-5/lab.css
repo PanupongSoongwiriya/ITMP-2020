@@ -71,7 +71,7 @@ div.box{
 	transition: none;
 	opacity: .5;
 }
-.box._toggle[data-isrightarrow="0"]{
+.box._toggle[data-isrightarrow="up"]{
 	background-color: red;
 }
 
@@ -101,7 +101,7 @@ div.box{
 	border: 3px solid #fffc;
 	transform: scale(.6);
 }
-.box._fruit[data-type="11"]{
+.box._fruit[data-type="apple"]{
 	background-color: red;
 }
 

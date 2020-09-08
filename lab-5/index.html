@@ -10,7 +10,7 @@
 	<div id="canvas">
 		<section id="canvas_header">
 			<div>
-				-- แสดงคะแนน
+				{{score}} แสดงคะแนน
 			</div>
 		</section>
 		<section id="canvas_main" 
@@ -19,9 +19,9 @@
 				<div class="box _path" 
 				v-for="i in 14" 
 				:data-pst="i"></div>
-				<div class="box _toggle" data-pst="10" data-isrightarrow="1"></div>
+				<div class="box _toggle" data-pst="10" :data-isrightarrow="isRightArrow"></div>
 
-				<div class="box _fruit"></div>
+				<div class="box _fruit" :data-pst="f.pst" :data-type="f.type" v-for="f in fruits"></div>
 
 				<div class="box _origin"></div>
 				<div class="box _12" data-pst="12"></div>
@@ -30,7 +30,7 @@
 			</main>
 		</section>
 		<section id="canvas_footer">
-			<div v-if="play" class="btn" id="toggle">
+			<div v-if="play" class="btn" id="toggle" @click="change_isRightArrow()">
 				Toggle
 			</div>
 			<div v-if="!play" class="btn" id="endgame">
@@ -46,22 +46,60 @@
 		}
 		
 		let fruitCount = 5
-		let isRightArrow = 1
+		let isRightArrow = "right"
 		let speed = 1000
 		let app = new Vue({
 			el:'#canvas',
 			data:{
+				isRightArrow:isRightArrow,
+				speed:speed,
 				play:true,
 				time:0,
 				score:0,
+				turn:0,
 				fruits:[
-					{id:1,type:13,pst:6,run:true,step:1},
-					{id:2,type:11,pst:3,run:true,step:1},
-					{id:3,type:11,pst:2,run:true,step:1},
-					{id:4,type:13,pst:1,run:true,step:1},
+					{id:1,type:"banana",pst:6,run:true,step:1},
+					{id:2,type:"apple",pst:3,run:true,step:1},
+					{id:3,type:"apple",pst:2,run:true,step:1},
+					{id:4,type:"banana",pst:1,run:true,step:1},
 				]
+			},
+			methods:{
+				change_isRightArrow:function () {
+					if (this.isRightArrow == "right") {
+						this.isRightArrow = "up"
+					} else {
+						this.isRightArrow = "right"
+					}
+				}
+			},
+			computed:{},
+			watch:{
+				turn: function(){
+					let count = this.fruits.length
+					for (let f in this.fruits) {
+						if ((this.fruits[f].pst == 12 && this.fruits[f].type != "apple") || (this.fruits[f].pst == 16 && this.fruits[f].type != "banana")) {//เช็คว่าเข้าถูกที่หรือป่าว
+							this.play = false//หยุดเล่น
+							console.log("เข้าผิดอันโว้ยยยย")
+							break;
+						}
+						if (this.fruits[f].pst == 10 && this.isRightArrow == "right") {//เช็คว่าต้องไปทางไหน
+							this.fruits[f].step = 3//วิ่งไปทางขวา
+						}
+						if (this.fruits[f].pst == 12 || this.fruits[f].pst == 16) {//ถึงเป้าหมายหรือยัง
+							this.fruits[f].run = false//หยุดวิ่ง
+						}
+						if (this.fruits[f].run) {
+							this.fruits[f].pst += this.fruits[f].step
+						}
+						// console.log(this.fruits[f])
+					}
+				}
 			}
 		})
+		let playing = setInterval(function(){
+			app.turn++; 
+		}, app.speed)
 	</script>
 </body>
 </html>
